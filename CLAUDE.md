@@ -183,6 +183,19 @@ VITE_CONVEX_URL=https://your-deployment.convex.cloud
 
 No Productboard API keys stored in env - users enter tokens in each module's UI.
 
+## Deployment
+
+**GitHub**: https://github.com/calvinmowens/productboard_tools
+
+**Production URL**: https://productboardtools.vercel.app
+
+**Hosting**: Vercel (auto-deploys on push to `main` branch)
+
+**Convex Production URL**: https://anonymous-cf-migration-app.convex.cloud
+
+Vercel environment variable:
+- `VITE_CONVEX_URL` = `https://anonymous-cf-migration-app.convex.cloud`
+
 ## Productboard API Documentation
 
 Reference links displayed in module UIs:
