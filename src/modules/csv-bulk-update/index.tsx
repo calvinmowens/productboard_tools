@@ -267,7 +267,7 @@ export default function CSVBulkUpdate() {
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
 
   // Update state
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [, setIsUpdating] = useState(false);
   const [updateProgress, setUpdateProgress] = useState({ current: 0, total: 0 });
   const [updateResults, setUpdateResults] = useState<UpdateResult[]>([]);
 
@@ -578,7 +578,7 @@ export default function CSVBulkUpdate() {
             featureId,
             featureName,
             success: result.success,
-            error: result.error,
+            error: result.error ?? undefined,
             fieldUpdates,
             allFieldsSkipped: false,
           });
@@ -609,7 +609,6 @@ export default function CSVBulkUpdate() {
   }, [csvData, uuidColumn, getValueColumns, customFields, apiToken, updateFeatureCustomFields, getFeature, getCustomFieldValue, preserveExistingValues]);
 
   const valueColumns = getValueColumns();
-  const previewRows = csvData?.rows.slice(0, 10) || [];
 
   // Results calculations
   const successCount = updateResults.filter(r => r.success && !r.allFieldsSkipped).length;
@@ -869,7 +868,7 @@ export default function CSVBulkUpdate() {
           <div className="bg-white rounded-lg shadow p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                {currentStep !== 'configure' && currentStep !== 'upload' && uuidColumn ? (
+                {currentStep !== 'configure' && uuidColumn ? (
                   <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
                     <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -882,7 +881,7 @@ export default function CSVBulkUpdate() {
                 )}
                 <h2 className="text-lg font-semibold text-gray-900">Configure UUID Column</h2>
               </div>
-              {currentStep !== 'configure' && currentStep !== 'upload' && uuidColumn && (
+              {currentStep !== 'configure' && uuidColumn && (
                 <button
                   onClick={() => setCurrentStep('configure')}
                   className="text-sm text-blue-600 hover:text-blue-800"
@@ -945,7 +944,7 @@ export default function CSVBulkUpdate() {
           <div className="bg-white rounded-lg shadow p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                {currentStep !== 'mapping' && currentStep !== 'configure' && currentStep !== 'upload' && valueColumns.length > 0 ? (
+                {currentStep !== 'mapping' && valueColumns.length > 0 ? (
                   <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
                     <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -958,7 +957,7 @@ export default function CSVBulkUpdate() {
                 )}
                 <h2 className="text-lg font-semibold text-gray-900">Map Columns to Custom Fields</h2>
               </div>
-              {currentStep !== 'mapping' && currentStep !== 'configure' && currentStep !== 'upload' && valueColumns.length > 0 && (
+              {currentStep !== 'mapping' && valueColumns.length > 0 && (
                 <button
                   onClick={() => setCurrentStep('mapping')}
                   className="text-sm text-blue-600 hover:text-blue-800"
