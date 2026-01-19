@@ -1,0 +1,51 @@
+Summary,Description,Status,Priority,Assignee,Story Points,Epic,Sprint,Labels,Due Date,Component
+User authentication via SSO,Allow users to log in using their company SSO provider,In Progress,High,alice@company.com,8,Authentication Epic,Sprint 24,security;auth,2025-02-15,Backend
+Password reset flow,Implement forgot password and reset functionality,To Do,High,bob@company.com,5,Authentication Epic,Sprint 24,security;auth,2025-02-20,Backend
+Two-factor authentication,Add optional 2FA for enhanced account security,Backlog,Medium,alice@company.com,13,Authentication Epic,Sprint 25,security;auth,2025-03-01,Backend
+Session timeout handling,Auto-logout users after 30 minutes of inactivity,To Do,Low,carol@company.com,3,Authentication Epic,Sprint 25,security,2025-02-28,Backend
+Dashboard redesign,Modernize the main dashboard with new widgets,In Progress,High,dave@company.com,13,UX Improvements,Sprint 24,ui;redesign,2025-02-10,Frontend
+Dark mode support,Add dark theme option for user preferences,In Progress,Medium,eve@company.com,8,UX Improvements,Sprint 24,ui;accessibility,2025-02-18,Frontend
+Mobile responsive layout,Ensure all pages work on mobile devices,To Do,High,dave@company.com,21,UX Improvements,Sprint 25,ui;mobile,2025-03-05,Frontend
+Keyboard navigation,Support full keyboard navigation for accessibility,Backlog,Medium,eve@company.com,8,UX Improvements,Sprint 26,accessibility,2025-03-15,Frontend
+Export to PDF,Allow users to export reports as PDF files,Done,High,frank@company.com,5,Reporting,Sprint 23,export;reports,2025-01-30,Backend
+Export to Excel,Allow users to export data as Excel spreadsheets,In Progress,High,frank@company.com,5,Reporting,Sprint 24,export;reports,2025-02-12,Backend
+Custom report builder,Drag-and-drop interface for building custom reports,To Do,Medium,grace@company.com,21,Reporting,Sprint 25,reports;analytics,2025-03-10,Frontend
+Scheduled reports,Send automated reports via email on a schedule,Backlog,Low,frank@company.com,13,Reporting,Sprint 26,reports;automation,2025-03-20,Backend
+API rate limiting,Implement rate limiting to prevent API abuse,In Progress,High,henry@company.com,8,API Platform,Sprint 24,api;security,2025-02-08,Backend
+API versioning,Support multiple API versions simultaneously,To Do,Medium,henry@company.com,13,API Platform,Sprint 25,api,2025-02-25,Backend
+Webhook notifications,Send webhooks for key system events,In Progress,Medium,ivy@company.com,8,API Platform,Sprint 24,api;integrations,2025-02-14,Backend
+GraphQL endpoint,Add GraphQL as an alternative to REST API,Backlog,Low,henry@company.com,21,API Platform,Sprint 27,api,2025-04-01,Backend
+Search performance optimization,Improve search query response times,In Progress,High,jack@company.com,8,Performance,Sprint 24,performance,2025-02-11,Backend
+Database indexing,Add missing indexes for slow queries,Done,High,jack@company.com,5,Performance,Sprint 23,performance;database,2025-01-28,Backend
+Caching layer,Implement Redis caching for frequently accessed data,To Do,High,jack@company.com,13,Performance,Sprint 25,performance;caching,2025-02-28,Backend
+Image optimization,Compress and lazy-load images for faster pages,To Do,Medium,kate@company.com,5,Performance,Sprint 25,performance;frontend,2025-03-01,Frontend
+User role management,Admin interface for managing user roles,In Progress,High,alice@company.com,8,Admin Tools,Sprint 24,admin;security,2025-02-13,Backend
+Audit logging,Track all user actions for compliance,To Do,High,bob@company.com,13,Admin Tools,Sprint 25,security;compliance,2025-02-27,Backend
+Bulk user import,Import users from CSV file,Backlog,Medium,carol@company.com,8,Admin Tools,Sprint 26,admin;import,2025-03-12,Backend
+Team management,Create and manage teams within organizations,To Do,Medium,alice@company.com,8,Admin Tools,Sprint 25,admin;teams,2025-03-05,Backend
+Email notifications,Send email alerts for important events,Done,High,liam@company.com,5,Notifications,Sprint 23,notifications;email,2025-01-25,Backend
+In-app notifications,Real-time notification center in the app,In Progress,Medium,mia@company.com,8,Notifications,Sprint 24,notifications;ui,2025-02-16,Frontend
+Push notifications,Mobile push notifications for urgent alerts,Backlog,Low,liam@company.com,13,Notifications,Sprint 26,notifications;mobile,2025-03-18,Backend
+Notification preferences,Let users customize notification settings,To Do,Medium,mia@company.com,5,Notifications,Sprint 25,notifications;settings,2025-03-02,Frontend
+Stripe integration,Process payments via Stripe,Done,High,noah@company.com,13,Billing,Sprint 22,billing;integrations,2025-01-15,Backend
+Invoice generation,Auto-generate invoices for subscriptions,In Progress,High,noah@company.com,8,Billing,Sprint 24,billing;reports,2025-02-10,Backend
+Subscription management,Allow users to upgrade/downgrade plans,To Do,High,olivia@company.com,8,Billing,Sprint 25,billing;subscriptions,2025-02-22,Frontend
+Usage-based billing,Track and bill based on API usage,Backlog,Medium,noah@company.com,21,Billing,Sprint 26,billing;api,2025-03-15,Backend
+Jira integration,Sync tasks bidirectionally with Jira,In Progress,High,paul@company.com,13,Integrations,Sprint 24,integrations;jira,2025-02-17,Backend
+Slack integration,Send notifications to Slack channels,Done,Medium,quinn@company.com,5,Integrations,Sprint 23,integrations;slack,2025-01-20,Backend
+Salesforce integration,Sync customer data with Salesforce,To Do,High,paul@company.com,21,Integrations,Sprint 25,integrations;salesforce,2025-03-08,Backend
+Zapier connector,Enable Zapier workflows with our API,Backlog,Medium,quinn@company.com,8,Integrations,Sprint 26,integrations;automation,2025-03-22,Backend
+File upload improvements,Support larger files and more formats,In Progress,Medium,rachel@company.com,5,File Management,Sprint 24,files;upload,2025-02-14,Backend
+File preview,Preview documents without downloading,To Do,Low,sam@company.com,8,File Management,Sprint 25,files;preview,2025-03-01,Frontend
+File versioning,Keep history of file changes,Backlog,Low,rachel@company.com,13,File Management,Sprint 26,files;versioning,2025-03-20,Backend
+Drag-and-drop upload,Drag files directly into the browser,Done,Medium,sam@company.com,3,File Management,Sprint 23,files;ui,2025-01-22,Frontend
+Advanced filters,Add more filter options to list views,In Progress,Medium,tina@company.com,5,Search & Filter,Sprint 24,search;ui,2025-02-12,Frontend
+Saved searches,Save and reuse search queries,To Do,Low,tina@company.com,5,Search & Filter,Sprint 25,search,2025-02-28,Frontend
+Full-text search,Search across all content types,To Do,High,jack@company.com,13,Search & Filter,Sprint 25,search;performance,2025-03-05,Backend
+Search suggestions,Auto-suggest results as user types,Backlog,Medium,tina@company.com,8,Search & Filter,Sprint 26,search;ui,2025-03-18,Frontend
+Onboarding wizard,Guide new users through setup,In Progress,High,uma@company.com,8,Onboarding,Sprint 24,onboarding;ux,2025-02-15,Frontend
+Tooltips and hints,Add contextual help throughout the app,To Do,Medium,uma@company.com,5,Onboarding,Sprint 25,onboarding;help,2025-02-25,Frontend
+Video tutorials,Embedded tutorial videos for features,Backlog,Low,victor@company.com,8,Onboarding,Sprint 26,onboarding;content,2025-03-12,Frontend
+Help center integration,Link to help articles from the app,To Do,Low,victor@company.com,3,Onboarding,Sprint 25,help;support,2025-03-01,Frontend
+Data anonymization,Anonymize PII for GDPR compliance,To Do,High,wendy@company.com,13,Compliance,Sprint 25,security;gdpr,2025-02-28,Backend
+Data export request,Allow users to request their data export,In Progress,High,wendy@company.com,8,Compliance,Sprint 24,gdpr;export,2025-02-18,Backend

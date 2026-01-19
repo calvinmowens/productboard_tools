@@ -1,0 +1,26 @@
+Customer Name,Customer Email,Company,Feedback Topic,Feedback Text,Rating,Date,Product Area,Priority,Source,Owner Email
+Sarah Johnson,sjohnson@acmecorp.com,Acme Corp,Report Builder,The report builder is slow when dealing with large datasets. Takes over 2 minutes to load reports with 50k+ records.,2,2026-01-10,Analytics,High,Support Ticket,pm@company.com
+Michael Chen,mchen@techstart.io,TechStart,Mobile App,Love the new mobile interface! Much easier to update opportunities on the go.,5,2026-01-09,Mobile,Low,App Store Review,product@company.com
+Jessica Martinez,jmartinez@global.net,Global Industries,Email Integration,Gmail integration keeps disconnecting. Have to re-authenticate every few days which is frustrating.,1,2026-01-08,Integration,Critical,Support Ticket,pm@company.com
+David Park,dpark@innovate.co,Innovate Labs,Dashboard,Would love to see more customization options for dashboards. Currently too limited.,3,2026-01-11,Analytics,Medium,User Interview,product@company.com
+Emily Thompson,ethompson@retail.com,RetailMax,Contact Management,Duplicate contact detection is excellent! Saved us hours of cleanup work.,5,2026-01-07,Data Quality,Low,Email,pm@company.com
+Robert Liu,rliu@finance.biz,FinanceHub,API,API rate limits are too restrictive for our integration needs. Need at least 2x current limits.,2,2026-01-12,Platform,High,Support Ticket,tech@company.com
+Amanda White,awhite@sales.pro,SalesPro Inc,Lead Scoring,The new AI lead scoring feature is a game changer. Our conversion rate improved 15%.,5,2026-01-06,AI/ML,Low,Success Review,product@company.com
+Christopher Lee,clee@enterprise.net,Enterprise Solutions,Performance,Page load times have gotten worse since the last update. Homepage takes 8+ seconds.,1,2026-01-13,Performance,Critical,Support Ticket,tech@company.com
+Rachel Green,rgreen@startup.io,StartupCo,Workflow Automation,Workflow builder UI is confusing. Needs better documentation and templates.,3,2026-01-05,Automation,Medium,User Interview,pm@company.com
+James Wilson,jwilson@mfg.com,Manufacturing Co,Forecasting,Love the quarterly forecasting view but wish we could customize the time periods.,4,2026-01-14,Sales,Medium,Feature Request,product@company.com
+Sophia Anderson,sanderson@tech.com,TechVentures,Security,Two-factor authentication setup was seamless. Great security improvements!,5,2026-01-04,Security,Low,Email,tech@company.com
+Daniel Brown,dbrown@consulting.biz,Brown Consulting,Export Functionality,CSV exports are missing some custom fields. Would like option to export all fields.,3,2026-01-15,Data Export,Medium,Support Ticket,pm@company.com
+Olivia Taylor,otaylor@cloud.net,CloudFirst,User Interface,The new UI is modern but the learning curve is steep. More onboarding tutorials needed.,3,2026-01-03,UX,Medium,Survey,product@company.com
+William Garcia,wgarcia@sales.io,SalesForce Pro,Calendar Integration,Outlook calendar sync is perfect. No more double booking meetings!,5,2026-01-16,Integration,Low,Email,pm@company.com
+Ava Martinez,amartinez@data.com,DataDriven Inc,Search,Global search doesn't find contacts by phone number. This should be added.,2,2026-01-02,Search,High,Feature Request,product@company.com
+Ethan Davis,edavis@growth.co,GrowthLabs,Pipeline View,Kanban-style pipeline view is exactly what we needed. Very intuitive.,5,2026-01-15,Sales,Low,User Interview,pm@company.com
+Isabella Rodriguez,irodriguez@services.biz,Service Solutions,Customer Support,Chat support response time is amazing. Got help within 2 minutes!,5,2026-01-01,Support,Low,Survey,support@company.com
+Matthew Miller,mmiller@automate.io,AutomateNow,Reporting,Custom report sharing permissions are too complex. Need simpler role-based options.,3,2026-01-14,Analytics,Medium,Support Ticket,pm@company.com
+Mia Thomas,mthomas@ecommerce.com,EcommEdge,Product Catalog,Product catalog import from Shopify failed multiple times. Need better error messages.,2,2026-01-13,Integration,High,Support Ticket,tech@company.com
+Alexander Moore,amoore@b2b.net,B2B Dynamics,Activity Tracking,Automatic activity logging from email is brilliant. Saves so much manual work.,5,2025-12-30,Productivity,Low,Email,product@company.com
+Charlotte Jackson,cjackson@scale.co,ScaleUp Corp,Territories,Territory management tools are too basic. Need hierarchical territory support.,3,2026-01-12,Sales,Medium,Feature Request,pm@company.com
+Benjamin White,bwhite@analytics.io,Analytics Pro,Einstein AI,Einstein recommendations are hit or miss. Sometimes suggests completely irrelevant contacts.,2,2026-01-11,AI/ML,Medium,User Interview,product@company.com
+Amelia Harris,aharris@growth.biz,Growth Partners,Mobile Offline,Offline mode on mobile is fantastic for field sales. Can work anywhere!,5,2026-01-10,Mobile,Low,App Store Review,product@company.com
+Lucas Martin,lmartin@enterprise.io,EnterpriseTech,Customization,Need ability to create custom objects without admin help. Current process is too slow.,3,2026-01-09,Platform,High,Support Ticket,tech@company.com
+Harper Thompson,hthompson@digital.com,Digital Dynamics,Training,Built-in training modules are helpful but need more advanced content for power users.,4,2026-01-08,Education,Low,Survey,support@company.com
