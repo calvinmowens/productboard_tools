@@ -196,6 +196,25 @@ No Productboard API keys stored in env - users enter tokens in each module's UI.
 Vercel environment variable:
 - `VITE_CONVEX_URL` = `https://steady-dove-51.convex.cloud`
 
+### Deploying Convex Functions
+
+The Vite build (`npm run build`) only builds the frontend. Convex functions must be deployed separately:
+
+```bash
+# Login to Convex (first time only)
+npx convex login
+
+# Deploy functions to production
+npx convex deploy -y
+```
+
+### Important: Vite Environment Variables
+
+Vite bakes environment variables at **build time**, not runtime. If you update `VITE_CONVEX_URL` in Vercel:
+1. You must trigger a **new build** (not just redeploy)
+2. Uncheck "Use existing Build Cache" when redeploying
+3. Otherwise the old URL remains in the JavaScript bundle
+
 ## Productboard API Documentation
 
 Reference links displayed in module UIs:
