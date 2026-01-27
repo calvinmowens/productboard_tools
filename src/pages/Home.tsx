@@ -61,7 +61,7 @@ export default function Home() {
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Calvin's Productboard Scripts</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             A collection of tools for running API operations on Productboard workspaces.
-            Select a script below to get started.
+            Select a script below to get started. Not an official Productboard tool.
           </p>
         </div>
 

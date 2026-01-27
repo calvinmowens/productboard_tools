@@ -345,7 +345,7 @@ export default function DuplicateNotes() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto py-8 px-4">
+      <div className="max-w-6xl mx-auto py-8 px-4">
         {/* Header */}
         <div className="mb-8">
           <Link to="/" className="text-blue-600 hover:text-blue-800 text-sm mb-2 inline-block">
@@ -405,6 +405,11 @@ export default function DuplicateNotes() {
                   type={showToken ? 'text' : 'password'}
                   value={apiToken}
                   onChange={(e) => setApiToken(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && apiToken.trim() && connectionStatus !== 'connected' && connectionStatus !== 'connecting') {
+                      handleConnect();
+                    }
+                  }}
                   disabled={connectionStatus === 'connected'}
                   placeholder="Enter your API token..."
                   autoComplete="off"

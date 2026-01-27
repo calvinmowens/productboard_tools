@@ -32,6 +32,8 @@ interface ImportResult {
   success: boolean;
   entityId?: string;
   error?: string;
+  ownerSkipped?: boolean;
+  ownerEmail?: string;
 }
 
 interface DuplicateGroup {
@@ -157,12 +159,16 @@ function downloadImportLog(results: ImportResult[], entityType: string) {
     return value;
   };
 
-  const headers = ['Row', 'Name', 'Status', 'Entity ID', 'Error'];
+  const ownerSkippedCount = results.filter(r => r.ownerSkipped).length;
+
+  const headers = ['Row', 'Name', 'Status', 'Entity ID', 'Owner Skipped', 'Skipped Owner Email', 'Error'];
   const rows = results.map(r => [
     String(r.rowIndex + 1),
     escapeCSV(r.name),
     r.success ? 'Created' : 'Failed',
     r.entityId || '',
+    r.ownerSkipped ? 'Yes' : '',
+    r.ownerEmail || '',
     escapeCSV(r.error || '')
   ]);
 
@@ -173,6 +179,7 @@ function downloadImportLog(results: ImportResult[], entityType: string) {
     [`Total: ${results.length}`],
     [`Created: ${results.filter(r => r.success).length}`],
     [`Failed: ${results.filter(r => !r.success).length}`],
+    [`Owner Skipped: ${ownerSkippedCount}`],
     [''],
     headers,
     ...rows
@@ -480,11 +487,12 @@ export default function CSVImport() {
 
         // Format value based on field type (case-insensitive matching)
         const fieldType = fieldInfo?.type?.toLowerCase() || '';
+        const fieldLabel = fieldInfo?.label?.toLowerCase() || '';
 
         if (fieldType.includes('status') || fieldKey === 'status') {
           fields[fieldKey] = { name: value };
-        } else if (fieldType.includes('member') || fieldKey === 'owner') {
-          fields[fieldKey] = { email: value };
+        } else if (fieldType.includes('member') || fieldType.includes('user') || fieldKey === 'owner' || fieldLabel.includes('owner')) {
+          fields[fieldKey] = { email: value.trim() };
         } else if (fieldType.includes('richtext') || fieldType.includes('rich_text') || fieldKey === 'description') {
           fields[fieldKey] = `<p>${value}</p>`;
         } else if (fieldType.includes('number') || fieldType.includes('integer') || fieldType.includes('float')) {
@@ -498,14 +506,44 @@ export default function CSVImport() {
         }
       }
 
+      // Track owner email if one was set (for reporting if skipped)
+      const ownerEmail = fields.owner?.email;
+
       // Create entity with the single parent ID (same for all rows)
       try {
-        const result = await createEntity({
+        let result = await createEntity({
           apiToken,
           entityType,
           fields,
           parentId,
         });
+
+        // Check if the error is related to owner assignment (invalid member email)
+        let ownerSkipped = false;
+        if (!result.success && result.error && ownerEmail) {
+          const errorLower = result.error.toLowerCase();
+          const isOwnerError = errorLower.includes('owner') ||
+            errorLower.includes('member') ||
+            errorLower.includes('user') ||
+            (errorLower.includes('email') && errorLower.includes('invalid'));
+
+          if (isOwnerError) {
+            // Retry without the owner field
+            const fieldsWithoutOwner = { ...fields };
+            delete fieldsWithoutOwner.owner;
+
+            result = await createEntity({
+              apiToken,
+              entityType,
+              fields: fieldsWithoutOwner,
+              parentId,
+            });
+
+            if (result.success) {
+              ownerSkipped = true;
+            }
+          }
+        }
 
         results.push({
           rowIndex: i,
@@ -513,6 +551,8 @@ export default function CSVImport() {
           success: result.success,
           entityId: result.entity?.id,
           error: result.error,
+          ownerSkipped,
+          ownerEmail: ownerSkipped ? ownerEmail : undefined,
         });
       } catch (error) {
         results.push({
@@ -662,6 +702,11 @@ export default function CSVImport() {
                   type={showToken ? 'text' : 'password'}
                   value={apiToken}
                   onChange={(e) => setApiToken(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && apiToken.trim() && connectionStatus !== 'connected' && connectionStatus !== 'connecting') {
+                      handleConnect();
+                    }
+                  }}
                   disabled={connectionStatus === 'connected'}
                   placeholder="Enter your API token..."
                   autoComplete="off"
@@ -1417,7 +1462,7 @@ export default function CSVImport() {
               <h2 className="text-lg font-semibold text-gray-900">Import Complete</h2>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className={`grid gap-4 mb-6 ${importResults.some(r => r.ownerSkipped) ? 'grid-cols-3' : 'grid-cols-2'}`}>
               <div className="bg-green-50 p-4 rounded-lg">
                 <div className="text-2xl font-bold text-green-700">{successCount}</div>
                 <div className="text-sm text-green-600">Successfully Created</div>
@@ -1426,6 +1471,12 @@ export default function CSVImport() {
                 <div className="text-2xl font-bold text-red-700">{failedCount}</div>
                 <div className="text-sm text-red-600">Failed</div>
               </div>
+              {importResults.some(r => r.ownerSkipped) && (
+                <div className="bg-orange-50 p-4 rounded-lg">
+                  <div className="text-2xl font-bold text-orange-700">{importResults.filter(r => r.ownerSkipped).length}</div>
+                  <div className="text-sm text-orange-600">Owner Skipped</div>
+                </div>
+              )}
             </div>
 
             {failedCount > 0 && (
@@ -1442,6 +1493,30 @@ export default function CSVImport() {
                     ))}
                   {importResults.filter(r => !r.success).length > 20 && (
                     <li>...and {importResults.filter(r => !r.success).length - 20} more errors</li>
+                  )}
+                </ul>
+              </div>
+            )}
+
+            {importResults.some(r => r.ownerSkipped) && (
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+                <h3 className="text-sm font-medium text-orange-800 mb-2">
+                  Owner Assignment Skipped ({importResults.filter(r => r.ownerSkipped).length} entities):
+                </h3>
+                <p className="text-sm text-orange-700 mb-2">
+                  The following entities were created without an owner because the specified email is not an active member in this workspace:
+                </p>
+                <ul className="text-sm text-orange-700 space-y-1 max-h-40 overflow-y-auto">
+                  {importResults
+                    .filter(r => r.ownerSkipped)
+                    .slice(0, 20)
+                    .map((r) => (
+                      <li key={r.rowIndex}>
+                        Row {r.rowIndex + 1} ({r.name}): Owner "{r.ownerEmail}" skipped
+                      </li>
+                    ))}
+                  {importResults.filter(r => r.ownerSkipped).length > 20 && (
+                    <li>...and {importResults.filter(r => r.ownerSkipped).length - 20} more</li>
                   )}
                 </ul>
               </div>

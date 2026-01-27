@@ -102,7 +102,6 @@ export default function CustomFieldMigration() {
 
   // Options state
   const [onlyEmptyTargets, setOnlyEmptyTargets] = useState(true);
-  const [showPreview, setShowPreview] = useState(true);
 
   // Preview/execution state
   const [_features, setFeatures] = useState<Feature[]>([]);
@@ -184,6 +183,7 @@ export default function CustomFieldMigration() {
 
   const addMapping = useCallback(() => {
     setFieldMappings(prev => [...prev, { id: generateId(), sourceFieldId: '', targetFieldId: '' }]);
+    setPreviewItems([]);
   }, []);
 
   const removeMapping = useCallback((id: string) => {
@@ -358,7 +358,7 @@ export default function CustomFieldMigration() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto py-8 px-4">
+      <div className="max-w-6xl mx-auto py-8 px-4">
         {/* Header */}
         <div className="mb-8">
           <Link to="/" className="text-blue-600 hover:text-blue-800 text-sm mb-2 inline-block">
@@ -421,6 +421,11 @@ export default function CustomFieldMigration() {
                   type={showToken ? 'text' : 'password'}
                   value={apiToken}
                   onChange={(e) => setApiToken(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && apiToken.trim() && connectionStatus !== 'connected' && connectionStatus !== 'connecting') {
+                      handleConnect();
+                    }
+                  }}
                   disabled={connectionStatus === 'connected'}
                   placeholder="Enter your API token..."
                   autoComplete="off"
@@ -607,36 +612,39 @@ export default function CustomFieldMigration() {
             </div>
 
             {/* Options */}
-            <div className="mt-6 space-y-3">
-              <label className="flex items-center gap-3 cursor-pointer">
+            <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={onlyEmptyTargets}
-                  onChange={(e) => setOnlyEmptyTargets(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                  onChange={(e) => {
+                    setOnlyEmptyTargets(e.target.checked);
+                    setPreviewItems([]);
+                  }}
+                  className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
-                <span className="text-sm text-gray-700">Only copy to empty target fields</span>
-              </label>
-
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={showPreview}
-                  onChange={(e) => setShowPreview(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                />
-                <span className="text-sm text-gray-700">Preview changes before executing</span>
+                <div>
+                  <span className="font-medium text-gray-900">Preserve existing values (don't overwrite)</span>
+                  <p className="text-sm text-gray-500 mt-1">
+                    When enabled, target fields that already have data will be skipped.
+                    Only empty target fields will be updated with values from the source field.
+                  </p>
+                </div>
               </label>
             </div>
 
             {/* Load Preview Button */}
-            {showPreview && validMappings.length > 0 && (
+            {validMappings.length > 0 && (
               <button
                 onClick={handleLoadPreview}
                 disabled={isLoadingPreview}
-                className="mt-6 px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+                className={`mt-6 px-6 py-2 rounded-lg transition-colors ${
+                  previewItems.length > 0
+                    ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400'
+                    : 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300'
+                } disabled:cursor-not-allowed`}
               >
-                {isLoadingPreview ? 'Loading Preview...' : 'Load Preview'}
+                {isLoadingPreview ? 'Loading Preview...' : previewItems.length > 0 ? 'Reload Preview' : 'Load Preview'}
               </button>
             )}
           </div>
@@ -655,15 +663,17 @@ export default function CustomFieldMigration() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className={`grid gap-4 mb-6 ${onlyEmptyTargets ? 'grid-cols-3' : 'grid-cols-2'}`}>
               <div className="bg-green-50 p-4 rounded-lg">
                 <div className="text-2xl font-bold text-green-700">{previewStats.willUpdate}</div>
                 <div className="text-sm text-green-600">Will Update</div>
               </div>
-              <div className="bg-yellow-50 p-4 rounded-lg">
-                <div className="text-2xl font-bold text-yellow-700">{previewStats.skippedHasValue}</div>
-                <div className="text-sm text-yellow-600">Skipped (has value)</div>
-              </div>
+              {onlyEmptyTargets && (
+                <div className="bg-yellow-50 p-4 rounded-lg">
+                  <div className="text-2xl font-bold text-yellow-700">{previewStats.skippedHasValue}</div>
+                  <div className="text-sm text-yellow-600">Skipped (has value)</div>
+                </div>
+              )}
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="text-2xl font-bold text-gray-700">{previewStats.skippedSourceEmpty}</div>
                 <div className="text-sm text-gray-600">Skipped (source empty)</div>
@@ -723,7 +733,7 @@ export default function CustomFieldMigration() {
         )}
 
         {/* Execute Section */}
-        {connectionStatus === 'connected' && validMappings.length > 0 && (
+        {connectionStatus === 'connected' && validMappings.length > 0 && previewItems.length > 0 && (
           <div className="bg-white rounded-lg shadow p-6 mb-6">
             <div className="flex items-center gap-3 mb-4">
               <div className={`w-6 h-6 rounded-full flex items-center justify-center ${executionResults.length > 0 ? 'bg-green-500' : 'bg-blue-500'}`}>
@@ -732,7 +742,7 @@ export default function CustomFieldMigration() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 ) : (
-                  <span className="text-white text-sm font-medium">{previewItems.length > 0 ? '4' : '3'}</span>
+                  <span className="text-white text-sm font-medium">4</span>
                 )}
               </div>
               <h2 className="text-lg font-semibold text-gray-900">Execute Migration</h2>
@@ -802,7 +812,7 @@ export default function CustomFieldMigration() {
             ) : (
               <div>
                 {/* Execute Button */}
-                {previewItems.length > 0 && previewStats.willUpdate > 0 && (
+                {previewStats.willUpdate > 0 && (
                   <div>
                     <p className="text-sm text-gray-600 mb-4">
                       Ready to migrate {previewStats.willUpdate} items across {validMappings.length} mapping(s).
@@ -817,24 +827,8 @@ export default function CustomFieldMigration() {
                   </div>
                 )}
 
-                {/* No items to process */}
-                {showPreview && previewItems.length === 0 && (
-                  <div>
-                    <p className="text-sm text-gray-600 mb-4">
-                      {validMappings.length} mapping(s) configured. Load preview to see items.
-                    </p>
-                    <button
-                      onClick={handleLoadPreview}
-                      disabled={isLoadingPreview}
-                      className="px-8 py-3 bg-gray-100 text-gray-700 text-lg font-medium rounded-lg hover:bg-gray-200 disabled:bg-gray-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      {isLoadingPreview ? 'Loading...' : 'Load Preview First'}
-                    </button>
-                  </div>
-                )}
-
                 {/* Preview loaded but no items to update */}
-                {previewItems.length > 0 && previewStats.willUpdate === 0 && (
+                {previewStats.willUpdate === 0 && (
                   <p className="text-sm text-gray-600">
                     No items to migrate. All items are either skipped (target has value) or have no source value.
                   </p>

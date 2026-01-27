@@ -685,6 +685,11 @@ export default function CSVBulkUpdate() {
                   type={showToken ? 'text' : 'password'}
                   value={apiToken}
                   onChange={(e) => setApiToken(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && apiToken.trim() && connectionStatus !== 'connected' && connectionStatus !== 'connecting') {
+                      handleConnect();
+                    }
+                  }}
                   disabled={connectionStatus === 'connected'}
                   placeholder="Enter your API token..."
                   autoComplete="off"
