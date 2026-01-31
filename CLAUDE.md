@@ -115,8 +115,8 @@ PARENT_TYPE_MAP = {
   component: ['product'],             // Optional parent
   feature: ['product', 'component'],  // Parent REQUIRED
   subfeature: ['feature'],            // Parent REQUIRED
-  initiative: [],                     // Top-level, no parent
-  objective: ['initiative'],          // Optional parent
+  initiative: ['objective'],                     // Top-level, no parent
+  objective: ['objective'],          // Optional parent
   keyResult: ['objective'],           // Optional parent
   release: ['releaseGroup'],          // Optional parent
   releaseGroup: [],                   // Top-level, no parent

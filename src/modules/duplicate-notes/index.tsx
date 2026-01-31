@@ -5,6 +5,7 @@ import { api } from '../../../convex/_generated/api';
 import { useInactivityTimeout } from '../../hooks/useInactivityTimeout';
 import { TimeoutWarningModal } from '../../components/TimeoutWarningModal';
 import { SecurityNotice } from '../../components/SecurityNotice';
+import ApiTokenHelpTooltip from '../../components/ApiTokenHelpTooltip';
 
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 
@@ -392,6 +393,7 @@ export default function DuplicateNotes() {
               )}
             </div>
             <h2 className="text-lg font-semibold text-gray-900">API Authentication</h2>
+            <ApiTokenHelpTooltip />
           </div>
 
           <div className="flex gap-4 items-end">

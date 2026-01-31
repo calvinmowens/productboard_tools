@@ -6,6 +6,7 @@ import type { CustomField, Feature, PreviewItem, FieldMapping, ConnectionStatus,
 import { useInactivityTimeout } from '../../hooks/useInactivityTimeout';
 import { TimeoutWarningModal } from '../../components/TimeoutWarningModal';
 import { SecurityNotice } from '../../components/SecurityNotice';
+import ApiTokenHelpTooltip from '../../components/ApiTokenHelpTooltip';
 
 // Helper to display field values properly
 function formatFieldValue(value: any): string {
@@ -408,6 +409,7 @@ export default function CustomFieldMigration() {
               )}
             </div>
             <h2 className="text-lg font-semibold text-gray-900">API Authentication</h2>
+            <ApiTokenHelpTooltip />
           </div>
 
           <div className="flex gap-4 items-end">

@@ -5,6 +5,7 @@ import DuplicateNotes from './modules/duplicate-notes';
 import CSVImport from './modules/csv-import';
 import CSVBulkUpdate from './modules/csv-bulk-update';
 import CSVNoteImport from './modules/csv-note-import';
+import FeedbackButton from './components/FeedbackButton';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/csv-bulk-update" element={<CSVBulkUpdate />} />
         <Route path="/csv-note-import" element={<CSVNoteImport />} />
       </Routes>
+      <FeedbackButton />
     </BrowserRouter>
   );
 }

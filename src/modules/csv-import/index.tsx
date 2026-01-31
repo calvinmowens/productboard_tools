@@ -5,6 +5,7 @@ import { api } from '../../../convex/_generated/api';
 import { useInactivityTimeout } from '../../hooks/useInactivityTimeout';
 import { TimeoutWarningModal } from '../../components/TimeoutWarningModal';
 import { SecurityNotice } from '../../components/SecurityNotice';
+import ApiTokenHelpTooltip from '../../components/ApiTokenHelpTooltip';
 
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 type ImportStep = 'upload' | 'configure' | 'mapping' | 'preview' | 'importing' | 'duplicates' | 'results';
@@ -689,7 +690,10 @@ export default function CSVImport() {
 
         {/* API Key Section */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">API Authentication</h2>
+          <div className="flex items-center mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">API Authentication</h2>
+          <ApiTokenHelpTooltip />
+        </div>
 
           <div className="flex gap-4 items-end">
             <div className="flex-1">

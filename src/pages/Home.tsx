@@ -58,7 +58,16 @@ export default function Home() {
       <div className="max-w-6xl mx-auto py-12 px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Calvin's Productboard Scripts</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Productboard Tools</h1>
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <span className="text-gray-600">Made by</span>
+            <img
+              src="/calvin-owens.jpeg"
+              alt="Calvin Owens"
+              className="w-8 h-8 rounded-full object-cover"
+            />
+            <span className="text-gray-600">Calvin Owens</span>
+          </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             A collection of tools for running API operations on Productboard workspaces.
             Select a script below to get started. Not an official Productboard tool.
