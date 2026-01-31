@@ -11,6 +11,7 @@
 import type * as migrations from "../migrations.js";
 import type * as productboard from "../productboard.js";
 import type * as productboardV2 from "../productboardV2.js";
+import type * as usageStats from "../usageStats.js";
 import type * as utils_errorSanitizer from "../utils/errorSanitizer.js";
 
 import type {
@@ -23,6 +24,7 @@ declare const fullApi: ApiFromModules<{
   migrations: typeof migrations;
   productboard: typeof productboard;
   productboardV2: typeof productboardV2;
+  usageStats: typeof usageStats;
   "utils/errorSanitizer": typeof utils_errorSanitizer;
 }>;
 

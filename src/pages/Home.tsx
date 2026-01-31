@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 
 interface ScriptModule {
   id: string;
@@ -10,6 +12,14 @@ interface ScriptModule {
 }
 
 const modules: ScriptModule[] = [
+  {
+    id: 'csv-import',
+    name: 'CSV Entity Import',
+    description: 'Import entities from a CSV file using the V2 API. Map columns to fields, preview before import, and handle duplicates.',
+    path: '/csv-import',
+    icon: '📥',
+    status: 'available',
+  },
   {
     id: 'custom-field-migration',
     name: 'Custom Field Migration',
@@ -24,14 +34,6 @@ const modules: ScriptModule[] = [
     description: 'Find and delete duplicate notes based on content, title, and company. Preview duplicates before deletion with smart keep/delete logic.',
     path: '/duplicate-notes',
     icon: '🗑️',
-    status: 'available',
-  },
-  {
-    id: 'csv-import',
-    name: 'CSV Entity Import',
-    description: 'Import entities from a CSV file using the V2 API. Map columns to fields, preview before import, and handle duplicates.',
-    path: '/csv-import',
-    icon: '📥',
     status: 'available',
   },
   {
@@ -53,6 +55,19 @@ const modules: ScriptModule[] = [
 ];
 
 export default function Home() {
+  const usageStats = useQuery(api.usageStats.getAll) ?? {};
+  const incrementUsage = useMutation(api.usageStats.increment);
+
+  // Find the module with the highest count for "Most Popular" badge
+  const maxCount = Math.max(0, ...Object.values(usageStats));
+  const mostPopularId = maxCount > 0
+    ? Object.entries(usageStats).find(([, count]) => count === maxCount)?.[0]
+    : null;
+
+  const handleModuleClick = (moduleId: string) => {
+    incrementUsage({ moduleId });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-6xl mx-auto py-12 px-4">
@@ -77,7 +92,13 @@ export default function Home() {
         {/* Module Tiles */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {modules.map((module) => (
-            <ModuleTile key={module.id} module={module} />
+            <ModuleTile
+              key={module.id}
+              module={module}
+              count={usageStats[module.id] ?? 0}
+              isPopular={module.id === mostPopularId}
+              onClick={() => handleModuleClick(module.id)}
+            />
           ))}
 
           {/* Placeholder for future modules */}
@@ -91,7 +112,14 @@ export default function Home() {
   );
 }
 
-function ModuleTile({ module }: { module: ScriptModule }) {
+interface ModuleTileProps {
+  module: ScriptModule;
+  count: number;
+  isPopular: boolean;
+  onClick: () => void;
+}
+
+function ModuleTile({ module, count, isPopular, onClick }: ModuleTileProps) {
   const isAvailable = module.status === 'available';
 
   if (!isAvailable) {
@@ -110,17 +138,26 @@ function ModuleTile({ module }: { module: ScriptModule }) {
   return (
     <Link
       to={module.path}
-      className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-blue-300 transition-all group"
+      onClick={onClick}
+      className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-blue-300 transition-all group relative"
     >
+      {isPopular && (
+        <span className="absolute top-3 right-3 inline-flex items-center px-2 py-1 bg-amber-100 text-amber-800 text-xs font-medium rounded-full">
+          ⭐ Most Popular
+        </span>
+      )}
       <div className="text-4xl mb-4">{module.icon}</div>
       <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
         {module.name}
       </h3>
       <p className="text-gray-600 text-sm mb-4">{module.description}</p>
-      <span className="inline-flex items-center text-blue-600 text-sm font-medium group-hover:gap-2 transition-all">
-        Open Script
-        <span className="ml-1 group-hover:translate-x-1 transition-transform">→</span>
-      </span>
+      <div className="flex items-center justify-between">
+        <span className="inline-flex items-center text-blue-600 text-sm font-medium group-hover:gap-2 transition-all">
+          Open Script
+          <span className="ml-1 group-hover:translate-x-1 transition-transform">→</span>
+        </span>
+        <span className="text-xs text-gray-400">{count} uses</span>
+      </div>
     </Link>
   );
 }
