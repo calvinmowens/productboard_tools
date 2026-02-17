@@ -52,6 +52,14 @@ const modules: ScriptModule[] = [
     icon: '📋',
     status: 'available',
   },
+  {
+    id: 'csv-company-import',
+    name: 'CSV Company Import',
+    description: 'Import companies from a CSV file. Creates new companies or updates existing ones with custom field values.',
+    path: '/csv-company-import',
+    icon: '🏢',
+    status: 'available',
+  },
 ];
 
 export default function Home() {

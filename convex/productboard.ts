@@ -490,3 +490,175 @@ export const updateFeatureCustomFields = action({
     };
   },
 });
+
+// ============================================
+// Company API Actions (for CSV Company Import)
+// ============================================
+
+export const listCompanyFields = action({
+  args: { apiToken: v.string() },
+  handler: async (_, { apiToken }) => {
+    try {
+      const url = `${API_BASE_URL}/companies/custom-fields`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: getHeaders(apiToken),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return { success: false, error: sanitizeApiError(response.status, errorText, "listCompanyFields"), data: [] };
+      }
+
+      const data = await response.json();
+      return {
+        success: true,
+        data: data.data || [],
+      };
+    } catch (error) {
+      return { success: false, error: sanitizeCatchError(error, "listCompanyFields"), data: [] };
+    }
+  },
+});
+
+export const createCompany = action({
+  args: {
+    apiToken: v.string(),
+    name: v.string(),
+    domain: v.string(),
+  },
+  handler: async (_, { apiToken, name, domain }) => {
+    try {
+      const url = `${API_BASE_URL}/companies`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          ...getHeaders(apiToken),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, domain }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return { success: false, error: sanitizeApiError(response.status, errorText, "createCompany"), data: null };
+      }
+
+      const data = await response.json();
+      return {
+        success: true,
+        data: data.data || data,
+        error: null,
+      };
+    } catch (error) {
+      return { success: false, error: sanitizeCatchError(error, "createCompany"), data: null };
+    }
+  },
+});
+
+export const setCompanyFieldValue = action({
+  args: {
+    apiToken: v.string(),
+    companyId: v.string(),
+    fieldId: v.string(),
+    fieldType: v.string(),
+    value: v.union(v.string(), v.number()),
+  },
+  handler: async (_, { apiToken, companyId, fieldId, fieldType, value }) => {
+    try {
+      const url = `${API_BASE_URL}/companies/${companyId}/custom-fields/${fieldId}/value`;
+
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          ...getHeaders(apiToken),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ data: { type: fieldType, value } }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return { success: false, error: sanitizeApiError(response.status, errorText, "setCompanyFieldValue") };
+      }
+
+      return { success: true, error: null };
+    } catch (error) {
+      return { success: false, error: sanitizeCatchError(error, "setCompanyFieldValue") };
+    }
+  },
+});
+
+export const getCompanyFieldValue = action({
+  args: {
+    apiToken: v.string(),
+    companyId: v.string(),
+    fieldId: v.string(),
+  },
+  handler: async (_, { apiToken, companyId, fieldId }) => {
+    try {
+      const url = `${API_BASE_URL}/companies/${companyId}/custom-fields/${fieldId}/value`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: getHeaders(apiToken),
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          return { success: true, value: null, hasValue: false };
+        }
+        const errorText = await response.text();
+        return { success: false, error: sanitizeApiError(response.status, errorText, "getCompanyFieldValue"), value: null, hasValue: false };
+      }
+
+      const data = await response.json();
+      const value = data.data?.value;
+      return { success: true, value, hasValue: value !== null && value !== undefined };
+    } catch (error) {
+      return { success: false, error: sanitizeCatchError(error, "getCompanyFieldValue"), value: null, hasValue: false };
+    }
+  },
+});
+
+export const getBatchCompanyFieldValues = action({
+  args: {
+    apiToken: v.string(),
+    companyId: v.string(),
+    fieldIds: v.array(v.string()),
+  },
+  handler: async (_, { apiToken, companyId, fieldIds }) => {
+    const results: Record<string, { value: string | number | null; hasValue: boolean }> = {};
+
+    // Fetch each field value
+    for (const fieldId of fieldIds) {
+      try {
+        const url = `${API_BASE_URL}/companies/${companyId}/custom-fields/${fieldId}/value`;
+
+        const response = await fetch(url, {
+          method: "GET",
+          headers: getHeaders(apiToken),
+        });
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            results[fieldId] = { value: null, hasValue: false };
+            continue;
+          }
+          results[fieldId] = { value: null, hasValue: false };
+          continue;
+        }
+
+        const data = await response.json();
+        const value = data.data?.value;
+        results[fieldId] = { value, hasValue: value !== null && value !== undefined };
+      } catch {
+        results[fieldId] = { value: null, hasValue: false };
+      }
+    }
+
+    return { success: true, results };
+  },
+});
