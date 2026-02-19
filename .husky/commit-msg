@@ -1,0 +1,23 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Validate commit message format
+# Expected format: <type>: <description>
+# Types: feat, fix, refactor, docs, chore, style, test, perf
+
+commit_msg=$(cat "$1")
+first_line=$(echo "$commit_msg" | head -n 1)
+
+if ! echo "$first_line" | grep -qE '^(feat|fix|refactor|docs|chore|style|test|perf): .+'; then
+  echo "Commit message must start with a type: feat|fix|refactor|docs|chore|style|test|perf"
+  echo "Example: feat: Add user authentication"
+  exit 1
+fi
+
+# Ensure first line is not too long (max 72 chars for git best practices)
+if [ ${#first_line} -gt 72 ]; then
+  echo "First line of commit message must be 72 characters or less"
+  exit 1
+fi
+
+exit 0
