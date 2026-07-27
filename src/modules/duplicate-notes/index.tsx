@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAction } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
+import { usePostHog } from '@posthog/react';
 import { useInactivityTimeout } from '../../hooks/useInactivityTimeout';
 import { TimeoutWarningModal } from '../../components/TimeoutWarningModal';
 import { SecurityNotice } from '../../components/SecurityNotice';
@@ -192,6 +193,8 @@ export default function DuplicateNotes() {
   const [deletionResults, setDeletionResults] = useState<DeletionResult[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
+  const posthog = usePostHog();
+
   // Convex actions
   const listNotes = useAction(api.productboard.listNotes);
   const listCompanies = useAction(api.productboard.listCompanies);
@@ -214,11 +217,12 @@ export default function DuplicateNotes() {
       }
 
       setConnectionStatus('connected');
+      posthog?.capture('api_connected', { module: 'duplicate_notes' });
     } catch (error) {
       setConnectionStatus('error');
       setConnectionError(String(error));
     }
-  }, [apiToken, listNotes]);
+  }, [apiToken, listNotes, posthog]);
 
   const handleDisconnect = useCallback(() => {
     setApiToken('');
@@ -278,13 +282,18 @@ export default function DuplicateNotes() {
       // Find duplicates
       const groups = findDuplicateGroups(allNotes);
       setDuplicateGroups(groups);
+      posthog?.capture('duplicate_notes_scanned', {
+        total_notes: allNotes.length,
+        duplicate_groups_found: groups.length,
+        notes_to_delete: groups.reduce((sum, g) => sum + g.deleteNotes.length, 0),
+      });
 
     } catch (error) {
       console.error('Error loading notes:', error);
     } finally {
       setIsLoadingNotes(false);
     }
-  }, [apiToken, listNotes, listCompanies]);
+  }, [apiToken, listNotes, listCompanies, posthog]);
 
   const handleDeleteDuplicates = useCallback(async () => {
     setShowConfirmModal(false);
@@ -330,7 +339,12 @@ export default function DuplicateNotes() {
 
     setDeletionResults(results);
     setIsDeleting(false);
-  }, [duplicateGroups, companies, apiToken, deleteNoteAction]);
+    posthog?.capture('duplicate_notes_deleted', {
+      total_deleted: results.filter(r => r.success).length,
+      failed_count: results.filter(r => !r.success).length,
+      duplicate_groups_count: duplicateGroups.length,
+    });
+  }, [duplicateGroups, companies, apiToken, deleteNoteAction, posthog]);
 
   const getCompanyName = (companyId: string | undefined) => {
     if (!companyId) return '(No company)';

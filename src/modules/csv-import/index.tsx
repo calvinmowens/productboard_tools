@@ -6,6 +6,7 @@ import { useInactivityTimeout } from '../../hooks/useInactivityTimeout';
 import { TimeoutWarningModal } from '../../components/TimeoutWarningModal';
 import { SecurityNotice } from '../../components/SecurityNotice';
 import ApiTokenHelpTooltip from '../../components/ApiTokenHelpTooltip';
+import { usePostHog } from '@posthog/react';
 
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 type ImportStep = 'upload' | 'configure' | 'mapping' | 'preview' | 'importing' | 'duplicates' | 'results';
@@ -237,6 +238,8 @@ export default function CSVImport() {
   // Convex actions
   const validateApiKeyV2 = useAction(api.productboardV2.validateApiKeyV2);
   const getEntityConfiguration = useAction(api.productboardV2.getEntityConfiguration);
+  const posthog = usePostHog();
+
   const listEntities = useAction(api.productboardV2.listEntities);
   const createEntity = useAction(api.productboardV2.createEntity);
   const checkDuplicates = useAction(api.productboardV2.checkDuplicates);
@@ -258,11 +261,12 @@ export default function CSVImport() {
       }
 
       setConnectionStatus('connected');
+      posthog?.capture('api_connected', { module: 'csv_entity_import' });
     } catch (error) {
       setConnectionStatus('error');
       setConnectionError(String(error));
     }
-  }, [apiToken, validateApiKeyV2]);
+  }, [apiToken, validateApiKeyV2, posthog]);
 
   const handleDisconnect = useCallback(() => {
     setApiToken('');
@@ -574,6 +578,12 @@ export default function CSVImport() {
 
     setImportResults(results);
     setIsImporting(false);
+    posthog?.capture('csv_entity_import_completed', {
+      entity_type: entityType,
+      total_rows: results.length,
+      success_count: results.filter(r => r.success).length,
+      failed_count: results.filter(r => !r.success).length,
+    });
 
     // Check for duplicates
     const createdNames = results.filter(r => r.success).map(r => r.name);
@@ -610,7 +620,7 @@ export default function CSVImport() {
     }
 
     setCurrentStep('results');
-  }, [csvData, entityType, selectedParentId, columnMappings, fieldConfig, apiToken, getNameColumn, createEntity, checkDuplicates]);
+  }, [csvData, entityType, selectedParentId, columnMappings, fieldConfig, apiToken, getNameColumn, createEntity, checkDuplicates, posthog]);
 
   const handleDuplicateAction = useCallback((name: string, action: 'create' | 'skip') => {
     setDuplicateGroups(prev => prev.map(g =>
