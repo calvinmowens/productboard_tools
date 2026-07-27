@@ -241,7 +241,7 @@ export const batchSearchParents = action({
     const uniqueNames = [...new Set(names)];
 
     // Fetch all entities of the parent type
-    let allParents: any[] = [];
+    const allParents: any[] = [];
     let nextPageToken: string | null = null;
 
     do {
@@ -286,7 +286,7 @@ export const checkDuplicates = action({
     const uniqueNames = [...new Set(names.map(n => n.toLowerCase()))];
 
     // Fetch all entities of the type
-    let allEntities: any[] = [];
+    const allEntities: any[] = [];
     let nextPageToken: string | null = null;
 
     do {

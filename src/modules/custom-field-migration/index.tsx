@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAction } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
+import { usePostHog } from '@posthog/react';
 import type { CustomField, Feature, PreviewItem, FieldMapping, ConnectionStatus, MigrationResult } from '../../types';
 import { useInactivityTimeout } from '../../hooks/useInactivityTimeout';
 import { TimeoutWarningModal } from '../../components/TimeoutWarningModal';
@@ -114,6 +115,8 @@ export default function CustomFieldMigration() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const posthog = usePostHog();
+
   // Convex actions
   const validateApiKey = useAction(api.productboard.validateApiKey);
   const listCustomFields = useAction(api.productboard.listCustomFields);
@@ -146,11 +149,12 @@ export default function CustomFieldMigration() {
 
       setCustomFields(fieldsResult.data);
       setConnectionStatus('connected');
+      posthog?.capture('api_connected', { module: 'custom_field_migration' });
     } catch (error) {
       setConnectionStatus('error');
       setConnectionError(String(error));
     }
-  }, [apiToken, validateApiKey, listCustomFields]);
+  }, [apiToken, validateApiKey, listCustomFields, posthog]);
 
   const handleDisconnect = useCallback(() => {
     setApiToken('');
@@ -275,12 +279,17 @@ export default function CustomFieldMigration() {
       }
 
       setPreviewItems(allItems);
+      posthog?.capture('migration_preview_loaded', {
+        features_count: allFeatures.length,
+        mappings_count: validMappings.length,
+        items_to_update: allItems.filter(i => i.action === 'will_update').length,
+      });
     } catch (error) {
       console.error('Error loading preview:', error);
     } finally {
       setIsLoadingPreview(false);
     }
-  }, [validMappings, apiToken, onlyEmptyTargets, loadAllFeatures, getBatchCustomFieldValues, customFields]);
+  }, [validMappings, apiToken, onlyEmptyTargets, loadAllFeatures, getBatchCustomFieldValues, customFields, posthog]);
 
   const handleExecuteMigration = useCallback(async () => {
     setShowConfirmModal(false);
@@ -336,7 +345,13 @@ export default function CustomFieldMigration() {
 
     setExecutionResults(results);
     setIsExecuting(false);
-  }, [previewItems, customFields, apiToken, setCustomFieldValue]);
+    posthog?.capture('migration_executed', {
+      total_items: itemsToUpdate.length,
+      success_count: results.filter(r => r.success).length,
+      failed_count: results.filter(r => !r.success).length,
+      mappings_count: validMappings.length,
+    });
+  }, [previewItems, customFields, apiToken, setCustomFieldValue, validMappings, posthog]);
 
   const previewStats = {
     willUpdate: previewItems.filter(i => i.action === 'will_update').length,

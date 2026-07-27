@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
+import { usePostHog } from '@posthog/react';
 
 interface ScriptModule {
   id: string;
@@ -65,6 +66,7 @@ const modules: ScriptModule[] = [
 export default function Home() {
   const usageStats = useQuery(api.usageStats.getAll) ?? {};
   const incrementUsage = useMutation(api.usageStats.increment);
+  const posthog = usePostHog();
 
   // Find the module with the highest count for "Most Popular" badge
   const maxCount = Math.max(0, ...Object.values(usageStats));
@@ -72,8 +74,9 @@ export default function Home() {
     ? Object.entries(usageStats).find(([, count]) => count === maxCount)?.[0]
     : null;
 
-  const handleModuleClick = (moduleId: string) => {
+  const handleModuleClick = (moduleId: string, moduleName: string) => {
     incrementUsage({ moduleId });
+    posthog?.capture('module_opened', { module_id: moduleId, module_name: moduleName });
   };
 
   return (
@@ -105,7 +108,7 @@ export default function Home() {
               module={module}
               count={usageStats[module.id] ?? 0}
               isPopular={module.id === mostPopularId}
-              onClick={() => handleModuleClick(module.id)}
+              onClick={() => handleModuleClick(module.id, module.name)}
             />
           ))}
 

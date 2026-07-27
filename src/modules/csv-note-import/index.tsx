@@ -6,6 +6,7 @@ import { useInactivityTimeout } from '../../hooks/useInactivityTimeout';
 import { TimeoutWarningModal } from '../../components/TimeoutWarningModal';
 import { SecurityNotice } from '../../components/SecurityNotice';
 import ApiTokenHelpTooltip from '../../components/ApiTokenHelpTooltip';
+import { usePostHog } from '@posthog/react';
 
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 type ImportStep = 'upload' | 'mapping' | 'preview' | 'importing' | 'results';
@@ -152,6 +153,8 @@ export default function CSVNoteImport() {
   const [importResults, setImportResults] = useState<ImportResult[]>([]);
   const [failedRows, setFailedRows] = useState<FailedRow[]>([]);
 
+  const posthog = usePostHog();
+
   // Convex actions
   const validateApiKey = useAction(api.productboard.validateApiKey);
   const createNote = useAction(api.productboard.createNote);
@@ -172,11 +175,12 @@ export default function CSVNoteImport() {
       }
 
       setConnectionStatus('connected');
+      posthog?.capture('api_connected', { module: 'csv_note_import' });
     } catch (error) {
       setConnectionStatus('error');
       setConnectionError(String(error));
     }
-  }, [apiToken, validateApiKey]);
+  }, [apiToken, validateApiKey, posthog]);
 
   const resetMappings = useCallback(() => {
     setTitleColumns([]);
@@ -438,8 +442,13 @@ export default function CSVNoteImport() {
     setImportResults(results);
     setFailedRows(failed);
     setIsImporting(false);
+    posthog?.capture('csv_note_import_completed', {
+      total_rows: results.length,
+      success_count: results.filter(r => r.success).length,
+      failed_count: results.filter(r => !r.success).length,
+    });
     setCurrentStep('results');
-  }, [csvData, buildTitle, buildNoteText, buildTags, userEmailColumn, ownerColumn, apiToken, createNote]);
+  }, [csvData, buildTitle, buildNoteText, buildTags, userEmailColumn, ownerColumn, apiToken, createNote, posthog]);
 
   // Download failure report CSV
   const downloadFailureReport = useCallback(() => {
